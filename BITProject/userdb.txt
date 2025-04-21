@@ -11,20 +11,7 @@ CREATE TABLE admins (
     password VARCHAR(255) NOT NULL
 );
 
-CREATE TABLE ads (
-    id INT AUTO_INCREMENT PRIMARY KEY,      -- Unique ID for each ad
-    user_id INT NOT NULL,                   -- ID of the user who created the ad
-    title VARCHAR(255) NOT NULL,            -- Title of the ad
-    category VARCHAR(100) NOT NULL,         -- Category of the ad
-    advertiser VARCHAR(255) NOT NULL,       -- Advertiser's name
-    contact VARCHAR(20) NOT NULL,           -- Contact number
-    expiry_date DATE NOT NULL,              -- Expiry date of the ad
-    description TEXT NOT NULL,              -- Description of the ad
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp of when the ad was created
-    image BLOB,                             -- BLOB to store image data
-    tags VARCHAR(255) DEFAULT NULL,         -- Comma-separated tags for the ad
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE -- Link to users table
-);
+
 
 CREATE TABLE ads (
     id INT AUTO_INCREMENT PRIMARY KEY,      -- Unique ID for each ad
