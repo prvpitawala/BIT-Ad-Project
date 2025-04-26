@@ -183,7 +183,7 @@
         $stmt ->bind_param("i", $category_id);
 
         if ($stmt->execute()) {
-            echo "<script>alert('category deleted successfully!'); window.location.href = 'admin_dashboard.php?tab=categories';</script>";
+            echo "<script>alert('Category deleted successfully!'); window.location.href = 'admin_dashboard.php?tab=categories';</script>";
         } else {
             echo "<script>alert('Error deleting category: " . $stmt->error . "');</script>";
         }
@@ -256,52 +256,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Admin Dashboard - MarketPlace Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Reset and base styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-gray: #f5f7fa;
+            --dark-gray: #34495e;
+            --text-color: #333;
+            --white: #ffffff;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Banner styles */
-        .banner {
-            background-color: rgb(40, 137, 167);
-            color: white;
-            padding: 15px 20px;
-            font-size: 24px;
-            font-weight: bold;
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .banner-controls {
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--white);
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+        
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            color: var(--white);
         }
-
-        .banner-buttons {
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
             display: flex;
-            gap: 10px;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
         }
-
-        /* Content container */
+        
+        .username {
+            font-weight: 600;
+        }
+        
+        /* Main Content */
         .main-content {
             max-width: 1200px;
-            margin: 40px auto;
-            padding: 20px;
+            margin: 2rem auto;
+            padding: 0 2rem;
         }
-
-        /* Typography */
-        h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: rgb(40, 137, 167);
-            text-align: center;
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            color: var(--dark-gray);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #777;
+            font-size: 1.1rem;
         }
 
         /* Tabs */
@@ -310,20 +402,27 @@
             margin-bottom: 20px;
             border-bottom: 1px solid #ddd;
         }
-
+        
         .tab {
             padding: 10px 20px;
             cursor: pointer;
             background-color: #f1f1f1;
             border-radius: 5px 5px 0 0;
             margin-right: 5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-
+        
         .tab.active {
-            background-color: rgb(40, 137, 167);
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--white);
         }
-
+        
+        .tab:hover {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+        
         /* Search form */
         .search-form {
             margin-bottom: 20px;
@@ -331,95 +430,176 @@
             gap: 10px;
             align-items: center;
         }
-
+        
         .search-form input {
-            padding: 8px;
+            padding: 12px;
             border: 1px solid #ddd;
-            border-radius: 4px;
+            border-radius: 50px;
             flex-grow: 1;
+            outline: none;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
         }
-
-        .search-form button {
-            padding: 8px 15px;
-            background-color: rgb(40, 137, 167);
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+        
+        .search-form input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
         }
-
-        .search-form .clear-search {
-            padding: 8px 15px;
-            background-color: #888;
-            color: white;
-            border: none;
-            border-radius: 4px;
+        
+        /* Button styles */
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            border: none;
         }
-
+        
+        .btn i {
+            margin-right: 8px;
+        }
+        
+        .btn-logout {
+            background-color: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
+        }
+        
+        .btn-logout:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        button[type="submit"] {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        button[type="submit"]:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .search {
+            border-radius: 50px;
+            padding: 12px 25px;
+        }
+        
         /* Tables */
         .data-table {
             width: 100%;
             border-collapse: collapse;
             background-color: white;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
+            overflow: hidden;
         }
-
+        
         .data-table th, .data-table td {
             text-align: left;
-            padding: 12px 15px;
-            border-bottom: 1px solid #ddd;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
         }
-
+        
         .data-table th {
-            background-color: rgb(40, 137, 167);
+            background-color: var(--primary-color);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
-
+        
         .data-table tr:hover {
             background-color: #f9f9f9;
         }
-
+        
         .data-table tr:last-child td {
             border-bottom: none;
         }
-
+        
         /* Action buttons */
         .action-btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
+            padding: 8px 15px;
+            border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 600;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+        
+        .action-btn i {
             margin-right: 5px;
         }
-
+        
         .view-btn {
             background-color: #4CAF50;
             color: white;
         }
-
+        
+        .view-btn:hover {
+            background-color: #3d8b40;
+            transform: translateY(-2px);
+        }
+        
         .reply-btn {
-            background-color: rgb(40, 137, 167);
+            background-color: var(--primary-color);
             color: white;
         }
-
+        
+        .reply-btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
         .delete-btn {
-            background-color: #f44336;
+            background-color: var(--accent-color);
             color: white;
         }
-
+        
+        .delete-btn:hover {
+            background-color: #c0392b;
+            transform: translateY(-2px);
+        }
+        
         .add-btn {
             background-color: #4CAF50;
             color: white;
         }
-
+        
+        .add-btn:hover {
+            background-color: #3d8b40;
+            transform: translateY(-2px);
+        }
+        
         /* Reply modal */
         .modal {
             display: none;
@@ -431,137 +611,225 @@
             height: 100%;
             overflow: auto;
             background-color: rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease;
         }
-
+        
         .modal-content {
             background-color: #fefefe;
             margin: 10% auto;
-            padding: 20px;
+            padding: 25px;
             border: 1px solid #888;
             width: 60%;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: slideDown 0.4s ease;
         }
-
+        
         .close {
             color: #aaa;
             float: right;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
-
+        
         .close:hover {
-            color: black;
+            color: var(--accent-color);
         }
-
+        
         /* Form elements */
         textarea {
             width: 100%;
-            padding: 10px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
             font-size: 16px;
             outline: none;
             height: 150px;
             resize: vertical;
             margin-bottom: 20px;
             box-sizing: border-box;
+            transition: all 0.3s ease;
         }
-
+        
         textarea:focus {
-            border-color: rgb(40, 137, 167);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
         }
-
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            font-size: 16px;
+            outline: none;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+        }
+        
         button[type="submit"] {
             display: block;
             width: 100%;
-            background: rgb(40, 137, 167);
+            background: var(--primary-color);
             color: white;
-            padding: 8px;
-            font-size: 15px;
+            padding: 12px;
+            font-size: 16px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s ease-in-out;
-            
+            transition: all 0.3s ease;
+            font-weight: 600;
         }
-
-        .search {
-            margin-right: 800px;
-        }
-
+        
         button[type="submit"]:hover {
-            background: rgb(30, 117, 147);
+            background: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
-
+        
         /* Status indicators */
         .status-indicator {
             display: inline-block;
-            padding: 3px 8px;
-            border-radius: 3px;
-            font-size: 12px;
-            font-weight: bold;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
             text-transform: uppercase;
         }
-
+        
         .status-replied {
             color: #4CAF50;
             background-color: #E8F5E9;
         }
-
+        
         .status-pending {
             color: #888;
             background-color: #f0f0f0;
         }
-
+        
         /* Message details */
         .message-details {
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
-
+        
+        .message-details h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+        
         .message-details p {
-            margin: 5px 0;
+            margin: 10px 0;
+            font-size: 1rem;
         }
-
+        
         .message-text {
             background-color: #f9f9f9;
-            padding: 10px;
-            border-radius: 5px;
+            padding: 15px;
+            border-radius: 10px;
             margin-top: 10px;
             white-space: pre-wrap;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #555;
+            border-left: 4px solid var(--primary-color);
         }
-
-        /* Button styles */
-        button {
-            padding: 10px 25px;
-            background: white;
-            color: rgb(40, 137, 167);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background 0.3s ease;
+        
+        .no-reply {
+            color: #777;
+            font-style: italic;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 8px;
+            text-align: center;
         }
-
-        button:hover {
-            background: #f0f0f0;
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 15px;
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .header-container, .main-content {
+                padding: 0 1.5rem;
             }
-
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                margin: 0.5rem 0;
+            }
+            
+            .user-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .main-content {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            
+            .modal-content {
+                width: 90%;
+                margin: 20% auto;
+            }
+            
             .data-table {
                 display: block;
                 overflow-x: auto;
             }
-
-            .modal-content {
-                width: 90%;
+            
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+                padding-bottom: 5px;
+            }
+            
+            .tab {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .action-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                margin-bottom: 5px;
+                display: block;
+            }
+            
+            .search-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-form button {
+                width: 100%;
             }
         }
     </style>
@@ -592,12 +860,9 @@
         
         // Open the reply modal
         function openReplyModal(messageId, subject, messageText) {
-            document.getElementById('message_id').value = messageId; // Fixed ID here
+            document.getElementById('message_id').value = messageId;
             document.getElementById('message-subject').textContent = subject;
             document.getElementById('original-message').textContent = messageText;
-
-            // console.log("praveen");
-            // document.getElementById('reply').value= 'praveen';
             document.getElementById('reply-modal').style.display = 'block';
             
             // Load existing reply if available
@@ -625,7 +890,6 @@
             document.getElementById('add-category-modal').style.display = 'none';
         }
 
-
         // Confirm before deleting
         function confirmDelete(type, id) {
             if (confirm(`Are you sure you want to delete this ${type}?`)) {
@@ -634,7 +898,6 @@
                 } else if (type === 'ad') {
                     window.location.href = `admin_dashboard.php?tab=ads&delete_ad=${id}`;
                 } else if (type === 'category'){
-                    console.log("done");
                     window.location.href = `admin_dashboard.php?tab=categories&delete_category=${id}`;
                 }
             }
@@ -654,27 +917,58 @@
     </script>
 </head>
 <body>
-    <div class="banner">
-        <div>Admin Dashboard</div>
-        <div class="banner-controls">
-            <div class="banner-buttons">
-                <!-- Log Out Button Form -->
+    <header>
+        <div class="header-container">
+            <a href="main_page.php" class="logo">
+                <i class="fas fa-store"></i> AdDrop (Admin)
+            </a>
+            
+            <div class="nav-links">
+                <a href="main_page.php" class="nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="admin_dashboard.php" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </div>
+            
+            <div class="user-area">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <?php echo substr($_SESSION['username'], 0, 1); ?>
+                    </div>
+                    <span class="username"><?php echo $_SESSION['username']; ?> (Admin)</span>
+                </div>
+                
                 <form method="POST" action="">
-                    <button type="submit" name="logout">Log Out</button>
+                    <button type="submit" name="logout" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
                 </form>
             </div>
         </div>
-    </div>
+    </header>
 
     <div class="main-content">
-        <h2>Admin Dashboard</h2>
+        <div class="page-header">
+            <h1 class="page-title">Admin Dashboard</h1>
+            <p class="page-subtitle">Manage users, advertisements, messages and categories</p>
+        </div>
         
         <!-- Tabs for switching between users, ads, and messages -->
         <div class="tabs">
-            <div id="tab-users" class="tab" onclick="showTab('users')">Users</div>
-            <div id="tab-ads" class="tab" onclick="showTab('ads')">Advertisements</div>
-            <div id="tab-messages" class="tab" onclick="showTab('messages')">Messages</div>
-            <div id="tab-categories" class="tab" onclick ="showTab('categories')">Ad Categories</div>
+            <div id="tab-users" class="tab" onclick="showTab('users')">
+                <i class="fas fa-users"></i> Users
+            </div>
+            <div id="tab-ads" class="tab" onclick="showTab('ads')">
+                <i class="fas fa-ad-bullhorn"></i> Advertisements
+            </div>
+            <div id="tab-messages" class="tab" onclick="showTab('messages')">
+                <i class="fas fa-envelope"></i> Messages
+            </div>
+            <div id="tab-categories" class="tab" onclick="showTab('categories')">
+                <i class="fas fa-tags"></i> Ad Categories
+            </div>
         </div>
         
         <!-- Users Tab Content -->
@@ -684,6 +978,9 @@
                 <input type="hidden" name="tab" value="users">
                 <input type="number" name="user_search_id" placeholder="Search by ID" value="<?php echo $user_search_id ?? ''; ?>" min="1">
                 <button class="search" type="submit">Search</button>
+                <?php if ($user_search_id): ?>
+                    <a href="admin_dashboard.php?tab=users&clear_user_search=1" class="btn btn-primary">Clear Search</a>
+                <?php endif; ?>
             </form>
 
             <table class="data-table">
@@ -703,7 +1000,9 @@
                                 <td><?php echo htmlspecialchars($user['username']); ?></td>
                                 <td><?php echo htmlspecialchars($user['email']); ?></td>
                                 <td>
-                                    <a href="#" class="action-btn delete-btn" onclick="confirmDelete('user', <?php echo $user['id']; ?>)">Delete</a>
+                                    <a href="#" class="action-btn delete-btn" onclick="confirmDelete('user', <?php echo $user['id']; ?>)">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -723,6 +1022,9 @@
                 <input type="hidden" name="tab" value="ads">
                 <input type="number" name="ad_search_id" placeholder="Search by ID" value="<?php echo $ad_search_id ?? ''; ?>" min="1">
                 <button class="search" type="submit">Search</button>
+                <?php if ($ad_search_id): ?>
+                    <a href="admin_dashboard.php?tab=ads&clear_ad_search=1" class="btn btn-primary">Clear Search</a>
+                <?php endif; ?>
             </form>
 
             <table class="data-table">
@@ -750,8 +1052,12 @@
                                 <td><?php echo date('Y-m-d', strtotime($ad['expiry_date'])); ?></td>
                                 <td><?php echo date('Y-m-d H:i', strtotime($ad['created_at'])); ?></td>
                                 <td>
-                                    <a href="ad_preview_by_admin.php?id=<?php echo $ad['id']; ?>" class="action-btn view-btn">View</a>
-                                    <a href="#" class="action-btn delete-btn" onclick="confirmDelete('ad', <?php echo $ad['id']; ?>)">Delete</a>
+                                    <a href="ad_preview_by_admin.php?id=<?php echo $ad['id']; ?>" class="action-btn view-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="#" class="action-btn delete-btn" onclick="confirmDelete('ad', <?php echo $ad['id']; ?>)">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -792,7 +1098,7 @@
                                 </td>
                                 <td>
                                     <a href="#" class="action-btn reply-btn" onclick="openReplyModal(<?php echo $msg['id']; ?>, '<?php echo addslashes(htmlspecialchars($msg['subject'])); ?>', '<?php echo addslashes(htmlspecialchars($msg['message'])); ?>')">
-                                        <?php echo ($msg['reply'] ? 'Edit' : 'Reply'); ?>
+                                        <i class="fas fa-reply"></i> <?php echo ($msg['reply'] ? 'Edit' : 'Reply'); ?>
                                     </a>
                                 </td>
                             </tr>
@@ -806,18 +1112,20 @@
             </table>
         </div>
 
-        <!-- categories Tab Content -->
+        <!-- Categories Tab Content -->
         <div id="categories" class="tab-content" style="display: none;">
+            <div style="margin-bottom: 20px; text-align: right;">
+                <a href="#" class="btn btn-primary add-btn" onclick="openAdCategoryModal()">
+                    <i class="fas fa-plus"></i> Add New Category
+                </a>
+            </div>
+            
             <table class="data-table">
                 <thead>
                     <tr>
                         <th>ID</th>
                         <th>Ad Category</th>
-                        <th>Action
-                            <div>
-                            <a href="#" class="action-btn add-btn" onclick="openAdCategoryModal()">add +</a>
-                            </div>
-                        </th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -827,13 +1135,15 @@
                                 <td><?php echo $category['id']; ?></td>
                                 <td><?php echo htmlspecialchars($category['category']); ?></td>
                                 <td>
-                                    <a href="#" class="action-btn delete-btn" onclick="confirmDelete('category', <?php echo $category['id']; ?>)">Delete</a>
+                                    <a href="#" class="action-btn delete-btn" onclick="confirmDelete('category', <?php echo $category['id']; ?>)">
+                                        <i class="fas fa-trash-alt"></i> Delete
+                                    </a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="4" style="text-align: center;">No categories found.</td>
+                            <td colspan="3" style="text-align: center;">No categories found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -841,8 +1151,6 @@
         </div>
     </div>
 
-    
-    
     <!-- Reply Modal -->
     <div id="reply-modal" class="modal">
         <div class="modal-content">
@@ -864,7 +1172,7 @@
         </div>
     </div>
 
-    <!-- Add category modal -->
+    <!-- Add Category Modal -->
     <div id="add-category-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeAdCategoryModal()">&times;</span>
@@ -872,12 +1180,9 @@
                 <h3>Add New Category</h3>
             </div>
             <form method="POST" action="">
-                <div style="margin-bottom: 20px;">
+                <div>
                     <label for="new_category"><strong>Category Name:</strong></label>
-                    <input type="text" id="new_category" name="new_category" required 
-                        placeholder="Enter new category name"
-                        style="width: 98%; padding: 10px; border: 1px solid #ccc; 
-                                border-radius: 5px; font-size: 16px; margin-top: 10px;">
+                    <input type="text" id="new_category" name="new_category" required placeholder="Enter new category name">
                 </div>
                 <button type="submit" name="add_category_submit">Add Category</button>
             </form>

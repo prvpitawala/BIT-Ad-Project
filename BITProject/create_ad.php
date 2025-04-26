@@ -8,15 +8,6 @@
         exit();
     }
 
-    // Check if the logout button was clicked
-    // if (isset($_POST['logout'])) {
-    //     // Destroy session and log the user out
-    //     session_unset();  // Removes all session variables
-    //     session_destroy(); // Destroys the session
-    //     header("Location: user_login.php"); // Redirect to login page after logging out
-    //     exit();
-    // }
-
     // Database connection for fetching categories
     $conn = new mysqli("localhost", "root", "", "userdb");
     if ($conn->connect_error) {
@@ -91,7 +82,6 @@
         $stmt->close();
         $conn->close();
     }
-
 ?>
 
 <!DOCTYPE html>
@@ -99,249 +89,560 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Ad</title>
+    <title>Create Advertisement - MarketPlace Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-       /* Reset and base styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-gray: #f5f7fa;
+            --dark-gray: #34495e;
+            --text-color: #333;
+            --white: #ffffff;
+            --success-color: #27ae60;
+            --warning-color: #e74c3c;
+        }
+        
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Banner styles */
-        .banner {
-            background-color: rgb(40, 137, 167);
-            color: white;
-            padding: 15px 20px;
-            font-size: 24px;
-            font-weight: bold;
+        
+        body {
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
-        .banner-controls {
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: var(--white);
+        }
+        
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .nav-link {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nav-link i {
+            font-size: 1.1rem;
+        }
+        
+        .user-area {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .user-info {
             display: flex;
             align-items: center;
             gap: 10px;
+            color: var(--white);
         }
-
-        .banner-buttons {
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.2);
             display: flex;
-            gap: 10px;
-        }
-
-        /* Form container */
-        .main-content {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-        }
-
-        /* Typography */
-        h2 {
-            margin-bottom: 20px;
-            font-size: 24px;
-            color: rgb(40, 137, 167);
-            text-align: center;
-        }
-
-        /* Form elements */
-        form {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
+            align-items: center;
+            justify-content: center;
             font-weight: bold;
-            color: #333;
+            font-size: 1.2rem;
         }
-
-        .tag-info {
-            font-size: 14px;
-            color: #666;
-            margin-top: 5px;
+        
+        .username {
+            font-weight: 600;
+        }
+        
+        /* Main Content Area */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+        
+        .page-header {
+            margin-bottom: 2rem;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            color: var(--dark-gray);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-subtitle {
+            color: #777;
+            font-size: 1.1rem;
+        }
+        
+        /* Form Container */
+        .form-container {
+            background-color: var(--white);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .form-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(to right, rgba(52, 152, 219, 0.05), rgba(52, 152, 219, 0.15));
+            border-bottom: 1px solid rgba(52, 152, 219, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+            color: var(--dark-gray);
+            font-weight: 700;
+            margin: 0;
+            flex-grow: 1;
+        }
+        
+        .form-content {
+            padding: 1.5rem;
+        }
+        
+        /* Form Elements */
+        .form-section {
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+        
+        .form-grid .form-group {
+            margin-bottom: 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--dark-gray);
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e1e1e1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 150px;
+        }
+        
+        .form-group input[type="file"] {
+            padding: 0.8rem 1rem;
+            cursor: pointer;
+        }
+        
+        .form-group .tag-info {
+            margin-top: 0.4rem;
+            font-size: 0.85rem;
+            color: #777;
             font-style: italic;
         }
-
-        input, 
-        textarea, 
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-            outline: none;
-            transition: border-color 0.3s ease-in-out;
-            box-sizing: border-box;
-        }
-
-        input:focus, 
-        textarea:focus, 
-        select:focus {
-            border-color: rgb(40, 137, 167);
-        }
-
-        textarea {
-            resize: vertical;
-            height: 120px;
-        }
-
-        /* Select element styling */
-        select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
+        
+        /* Buttons */
+        .btn {
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
             cursor: pointer;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 1em;
-        }
-
-        /* File upload styling */
-        input[type="file"] {
-            padding: 8px;
-            background-color: #fafafa;
-            border: 2px solid #ccc;
-            font-size: 15px;
-        }
-
-        /* Button styles */
-        button {
-            padding: 10px 25px;
-            background: white;
-            color: rgb(40, 137, 167);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            transition: background 0.3s ease;
         }
-
-        button:hover {
-            background: #f0f0f0;
+        
+        .btn i {
+            margin-right: 8px;
         }
-
-        button[type="submit"] {
-            display: block;
-            width: 100%;
-            background: rgb(40, 137, 167);
-            color: white;
-            padding: 12px;
-            font-size: 18px;
-            border-radius: 5px;
-            transition: background 0.3s ease-in-out;
-            margin-top: 20px;
+        
+        .btn-logout {
+            background-color: transparent;
+            color: var(--white);
+            border: 2px solid var(--white);
         }
-
-        button[type="submit"]:hover {
-            background: rgb(30, 117, 147);
+        
+        .btn-logout:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
-
-        /* Responsive styles */
-        @media (max-width: 680px) {
-            .main-content {
-                padding: 15px;
+        
+        .btn-back {
+            background-color: transparent;
+            color: var(--dark-gray);
+            border: 2px solid var(--dark-gray);
+        }
+        
+        .btn-back:hover {
+            background-color: rgba(52, 73, 94, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary, .btn-submit {
+            background-color: var(--primary-color);
+            color: var(--white);
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.2);
+        }
+        
+        .btn-primary:hover, .btn-submit:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+        }
+        
+        /* Actions Container */
+        .actions-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
+        }
+        
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .form-container {
+            animation: fadeIn 0.5s ease forwards;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .header-container, main {
+                padding: 0 1.5rem;
             }
-
-            .banner {
-                font-size: 18px;
+        }
+        
+        @media (max-width: 992px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
             }
             
-            button {
-                padding: 8px 15px;
-                font-size: 14px;
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                margin: 0.5rem 0;
+            }
+            
+            .user-area {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            main {
+                padding: 0 1rem;
+                margin: 1rem auto;
+            }
+            
+            .page-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+                padding: 1.2rem;
+            }
+            
+            .form-title {
+                font-size: 1.5rem;
+            }
+            
+            .form-content {
+                padding: 1.2rem;
+            }
+            
+            .actions-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .nav-links {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.9rem;
+            }
+            
+            .user-area {
+                flex-direction: column;
+                gap: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-
-    <div class="banner">
-        <div>Welcome <?php echo $_SESSION['username']; ?> !</div>
-        <div class="banner-controls">
-            <div class="banner-buttons">
-                <!-- Log Out Button Form -->
-                <!-- <form method="POST" action="">
-                    <button type="submit" name="logout">Log Out</button>
-                </form> -->
+    <header>
+        <div class="header-container">
+            <a href="main_page.php" class="logo">
+                <i class="fas fa-store"></i> AdDrop
+            </a>
+            
+            <div class="nav-links">
+                <a href="main_page.php" class="nav-link">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="loged_main_page.php" class="nav-link">
+                    <i class="fas fa-th-large"></i> My Ads
+                </a>
+                <a href="create_ad.php" class="nav-link active">
+                    <i class="fas fa-plus-circle"></i> Create Ad
+                </a>
+                <a href="contact_page.php" class="nav-link">
+                    <i class="fas fa-envelope"></i> Contact
+                </a>
+            </div>
+            
+            <div class="user-area">
+                <div class="user-info">
+                    <div class="user-avatar">
+                        <?php echo substr($_SESSION['username'], 0, 1); ?>
+                    </div>
+                    <span class="username"><?php echo $_SESSION['username']; ?></span>
+                </div>
+                
+                <form method="POST" action="">
+                    <button type="submit" name="logout" class="btn btn-logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
+    </header>
 
-    <div class="main-content">
-        <h2>Create a New Ad</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <!-- Ad Title -->
-            <div class="form-group">
-                <label for="title">Ad Title</label>
-                <input type="text" id="title" name="title" placeholder="Enter ad title" required>
+    <main>
+        <div class="page-header">
+            <h1 class="page-title">Create Advertisement</h1>
+            <p class="page-subtitle">Post your new ad for the marketplace</p>
+        </div>
+        
+        <div class="form-container">
+            <div class="form-header">
+                <h1 class="form-title">Create New Advertisement</h1>
             </div>
             
-            <!-- Ad Category -->
-            <div class="form-group">
-                <label for="category">Category</label>
-                <select id="category" name="category" required>
-                    <option value="">Select Category</option>
-                    <?php foreach ($categories as $categoryItem): ?>
-                        <option value="<?php echo htmlspecialchars($categoryItem['category']); ?>">
-                            <?php echo htmlspecialchars($categoryItem['category']); ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
+            <div class="form-content">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-info-circle"></i> Basic Information
+                        </h2>
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="title">Advertisement Title</label>
+                                <input type="text" id="title" name="title" placeholder="Enter a catchy title" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="category">Category</label>
+                                <select id="category" name="category" required>
+                                    <option value="">Select a category</option>
+                                    <?php foreach ($categories as $categoryItem): ?>
+                                        <option value="<?php echo htmlspecialchars($categoryItem['category']); ?>">
+                                            <?php echo htmlspecialchars($categoryItem['category']); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="advertiser">Advertiser Name</label>
+                                <input type="text" id="advertiser" name="advertiser" placeholder="Your name or company name" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="contact">Contact Number</label>
+                                <input type="tel" id="contact" name="contact" placeholder="Phone number for inquiries" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="expiry_date">Expiry Date</label>
+                                <input type="date" id="expiry_date" name="expiry_date" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tags">Tags</label>
+                                <input type="text" id="tags" name="tags" placeholder="e.g. new, affordable, premium, urgent">
+                                <div class="tag-info">Separate tags with commas</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-align-left"></i> Description
+                        </h2>
+                        
+                        <div class="form-group">
+                            <label for="description">Advertisement Description</label>
+                            <textarea id="description" name="description" placeholder="Provide detailed information about your advertisement" required></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-image"></i> Image Upload
+                        </h2>
+                        
+                        <div class="form-group">
+                            <label for="image">Upload Image</label>
+                            <input type="file" name="image" id="image" accept="image/*" required>
+                        </div>
+                    </div>
+                    
+                    <div class="actions-container">
+                        <a href="loged_main_page.php" class="btn btn-back">
+                            <i class="fas fa-arrow-left"></i> Back to Listings
+                        </a>
+                        
+                        <button type="submit" class="btn btn-submit">
+                            <i class="fas fa-plus-circle"></i> Create Advertisement
+                        </button>
+                    </div>
+                </form>
             </div>
-
-            <!-- Advertiser Name -->
-            <div class="form-group">
-                <label for="advertiser">Advertiser Name</label>
-                <input type="text" id="advertiser" name="advertiser" placeholder="Enter advertiser name" required>
-            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Set minimum date for expiry date to today
+        window.addEventListener('DOMContentLoaded', (event) => {
+            const today = new Date();
+            const dd = String(today.getDate()).padStart(2, '0');
+            const mm = String(today.getMonth() + 1).padStart(2, '0'); // January is 0!
+            const yyyy = today.getFullYear();
             
-            <!-- Contact Number -->
-            <div class="form-group">
-                <label for="contact">Contact Number</label>
-                <input type="tel" id="contact" name="contact" placeholder="Enter contact number" required>
-            </div>
-            
-            <!-- Ad Expiry Date -->
-            <div class="form-group">
-                <label for="expiry_date">Expiry Date</label>
-                <input type="date" id="expiry_date" name="expiry_date" required>
-            </div>
-
-            <!-- Ad Tags -->
-            <div class="form-group">
-                <label for="tags">Tags</label>
-                <input type="text" id="tags" name="tags" placeholder="Enter tags separated by commas">
-                <div class="tag-info">Example: new, affordable, premium, urgent</div>
-            </div>
-
-            <!-- Ad Description -->
-            <div class="form-group">
-                <label for="description">Ad Description</label>
-                <textarea id="description" name="description" placeholder="Enter ad description" required></textarea>
-            </div>
-
-            <!-- Image Upload -->
-            <div class="form-group">
-                <label for="image">Upload Image</label>
-                <input type="file" name="image" id="image" accept="image/*" required>
-            </div>
-            
-            <!-- Submit Button -->
-            <button type="submit">Create Ad</button>
-        </form>
-    </div>
-
+            const todayFormatted = yyyy + '-' + mm + '-' + dd;
+            document.getElementById('expiry_date').setAttribute('min', todayFormatted);
+        });
+    </script>
 </body>
 </html>
