@@ -660,7 +660,7 @@
                             
                             <div class="form-group">
                                 <label for="contact">Contact Number</label>
-                                <input type="tel" id="contact" name="contact" value="<?php echo htmlspecialchars($ad['contact']); ?>" required>
+                                <input type="tel" id="contact" name="contact" value="<?php echo htmlspecialchars($ad['contact']); ?>" pattern="[0-9]{10}" required>
                             </div>
                             
                             <div class="form-group">

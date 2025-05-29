@@ -580,7 +580,7 @@
                             
                             <div class="form-group">
                                 <label for="contact">Contact Number</label>
-                                <input type="tel" id="contact" name="contact" placeholder="Phone number for inquiries" required>
+                                <input type="tel" id="contact" name="contact" placeholder="Phone number for inquiries" pattern="[0-9]{10}" required>
                             </div>
                             
                             <div class="form-group">
